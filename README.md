@@ -90,15 +90,15 @@ Script for uploading solr conf directory to zookeeper
 
 - -l path: path to solr's lib where the following jars are located [default:none]
 
-|    jars                 |
-|:-----------------------:|
-| commons-cli-1.2.jar     |
-| commons-io-2.1.jar      |
-| log4j-1.2.16.jar        |
-| slf4j-api-1.6.6.jar     |
-| slf4j-log4j12-1.6.6.jar |
-| solr-core-4.6.0.jar     |
-| solr-solrj-4.6.0.jar    |
-| zookeeper-3.4.5.jar     |
+  |    jars                 |
+  |:-----------------------:|
+  | commons-cli-1.2.jar     |
+  | commons-io-2.1.jar      |
+  | log4j-1.2.16.jar        |
+  | slf4j-api-1.6.6.jar     |
+  | slf4j-log4j12-1.6.6.jar |
+  | solr-core-4.6.0.jar     |
+  | solr-solrj-4.6.0.jar    |
+  | zookeeper-3.4.5.jar     |
 
 - -n name: name of this configuration as it will appear in zookeeper:/configs [default:none]
