@@ -8,87 +8,67 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
 
 ## Scripts
 
-### sc-create-alias.sh
+- sc-create-alias.sh
 
-Script for creating an alias.
+ Script for creating an alias.
 
-- -a alias-name: name of alias [default:none]
+    - -a alias-name: name of alias [default:none]
+    - -c collection: name of collection [default:none]
+    - -h host:port: host and port where zookeeper is running [default:localhost:8983]
+    - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-create-alias...out]
 
-- -c collection: name of collection [default:none]
+- sc-delete-alias.sh
 
-- -h host:port: host and port where zookeeper is running [default:localhost:8983]
+ Script for deleting an alias.
 
-- -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-create-alias...out]
+    - -a alias-name: name of alias [default:none]
+    - -h host:port: host and port where zookeeper is running [default:localhost:8983]
 
-### sc-delete-alias.sh
+- sc-create-collection.sh
 
-Script for deleting an alias.
+ Script for creating a given collection.
 
-- -a alias-name: name of alias [default:none]
+    - -c collection: name of collection [default:none] 
+    - -g config: name of the zookeeper configuraiton as found in zookeeper:/configs [default:none] 
+    - -h host:port: host and port where zookeeper is running [default:localhost:8983]
+    - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-create-collection...out]
 
-- -h host:port: host and port where zookeeper is running [default:localhost:8983]
+- sc-delete-collection.sh
 
-### sc-create-collection.sh
+ Script for deleting a given collection.
 
-Script for creating a given collection.
+    - -c collection: name of collection [default:none]
+    - -d: give to delete the index files [default:false]
+    - -h host:port: host and port where zookeeper is running [default:none]
+    - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-delete-collection...out]
 
-- -c collection: name of collection [default:none]
+- sc-delete-data.sh
 
-- -g config: name of the zookeeper configuraiton as found in zookeeper:/configs [default:none]
+ Script for deleting all data of a given collection.
 
-- -h host:port: host and port where zookeeper is running [default:localhost:8983]
+    - -c collection: name of collection [default:none]
+    - -h host:port: host and port where zookeeper is running [default:localhost:8983]
+    - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-delete-data....]
 
-- -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-create-collection...out]
+- sc-update-data.sh
 
-### sc-delete-collection.sh
+ Script for updating a value in a document.
 
-Script for deleting a given collection.
+    - -c collection: name of collection [default:none]
+    - -h host:port: host and port where zookeeper is running [default:localhost:8983]
+    - -f field-name: name of the field whose value is to be modified [default:none]
+    - -i unique id field: name of the unique id field of the document to change [default:none]
+    - -n new value: value to change to [default:none]
+    - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-update-data....out]
+    - -u unique id value: value of the unique id of the document to change [default:none]
 
-- -c collection: name of collection [default:none]
+- zk-upload-config.sh
 
-- -d: give to delete the index files [default:false]
+ Script for uploading solr conf directory to zookeeper
 
-- -h host:port: host and port where zookeeper is running [default:none]
-
-- -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-delete-collection...out]
-
-### sc-delete-data.sh
-
-Script for deleting all data of a given collection.
-
-- -c collection: name of collection [default:none]
-
-- -h host:port: host and port where zookeeper is running [default:localhost:8983]
-
-- -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-delete-data....]
-
-### sc-update-data.sh
-
-Script for updating a value in a document.
-
-- -c collection: name of collection [default:none]
-
-- -h host:port: host and port where zookeeper is running [default:localhost:8983]
-
-- -f field-name: name of the field whose value is to be modified [default:none]
-
-- -i unique id field: name of the unique id field of the document to change [default:none]
-
-- -n new value: value to change to [default:none]
-
-- -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-update-data....out]
-
-- -u unique id value: value of the unique id of the document to change [default:none]
-
-### zk-upload-config.sh
-
-Script for uploading solr conf directory to zookeeper
-
-- -d path: path to solr's conf directory [default:none]
-
-- -h host:port: host and port where zookeeper is running [default:localhost:2181]
-
-- -l path: path to solr's lib where the following jars are located [default:none]
+    - -d path: path to solr's conf directory [default:none]
+    - -h host:port: host and port where zookeeper is running [default:localhost:2181]
+    - -l path: path to solr's lib where the following jars are located [default:none]
 
   |    jars                 |
   |:-----------------------:|
@@ -101,4 +81,4 @@ Script for uploading solr conf directory to zookeeper
   | solr-solrj-4.6.0.jar    |
   | zookeeper-3.4.5.jar     |
 
-- -n name: name of this configuration as it will appear in zookeeper:/configs [default:none]
+    - -n name: name of this configuration as it will appear in zookeeper:/configs [default:none]
