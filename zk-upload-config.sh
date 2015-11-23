@@ -165,7 +165,7 @@ done
 
 # RUN!
 #
-cmd="java -cp $cp org.apache.solr.cloud.ZkCLI -cmd upconfig -zkhost ${host} -confdir ${conf_dir} -confname ${conf_name}"
+cmd="java -cp $cp org.apache.solr.cloud.ZkCLI -cmd upconfig -zkhost ${host_port} -confdir ${conf_dir} -confname ${conf_name}"
 log_stdout $cmd
 $cmd
 exit_code=$?
