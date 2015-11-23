@@ -27,14 +27,14 @@
 #                 [default:localhost:2181]
 #
 #   -l path: path to solr's lib where the following jars are located
-#              - commons-cli-1.2.jar
-#              - commons-io-2.1.jar
-#              - log4j-1.2.16.jar
-#              - slf4j-api-1.6.6.jar
-#              - slf4j-log4j12-1.6.6.jar
-#              - solr-core-4.6.0.jar
-#              - solr-solrj-4.6.0.jar
-#              - zookeeper-3.4.5.jar
+#              - commons-cli-*.jar
+#              - commons-io-*.jar
+#              - logj-*.jar
+#              - slfj-api-*.jar
+#              - slfj-logj-*.jar
+#              - solr-core-*.jar
+#              - solr-solrj-*.jar
+#              - zookeeper-*.jar
 #                 [default:none]
 #
 #   -n name: name of this configuration as it will appear in zookeeper:/configs
@@ -58,14 +58,14 @@ fi
 
 # jars used to perform the upload
 #
-jars="commons-cli-1.2.jar \
-commons-io-2.1.jar \
-log4j-1.2.16.jar \
-slf4j-api-1.6.6.jar \
-slf4j-log4j12-1.6.6.jar \
-solr-core-4.6.0.jar \
-solr-solrj-4.6.0.jar \
-zookeeper-3.4.5.jar"
+jars="commons-cli- \ 
+commons-io- \
+log4j- \
+slf4j-api \
+slf4j-log4j12- \
+solr-core- \
+solr-solrj- \
+zookeeper-"
 
 # defaults
 #
@@ -150,12 +150,17 @@ log_stdout "using  solr-lib: $solr_lib"
 
 # create classpath
 cp=''
-for file in $jars
+for jar in $solr_lib/*;
 do
-  if test -n "$cp"; then
-    cp="$cp:"
-  fi
-  cp="$cp$solr_lib$file"
+  for patt in $jars
+  do
+    if [[ $jar =~ $patt ]]; then
+      if test -n "$cp"; then
+        cp="$cp:"
+      fi
+      cp="$cp$jar"
+    fi
+  done
 done
 
 # RUN!
