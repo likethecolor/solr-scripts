@@ -2,6 +2,7 @@
 
 ## 1.0.2 - Nov 23, 2015
 - variable name used was $host, should be $host_port
+- added sc-delete-replica.sh
 
 ## 1.0.1 - Nov 23, 2015
 - the script was lookng for specific versions on the jar files in solr lib

@@ -11,6 +11,7 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
 - sc-create-alias.sh
 
  Script for creating an alias.
+ https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api4
 
     - -a alias-name: name of alias [default:none]
     - -c collection: name of collection [default:none]
@@ -20,6 +21,7 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
 - sc-delete-alias.sh
 
  Script for deleting an alias.
+ https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api5
 
     - -a alias-name: name of alias [default:none]
     - -h host:port: host and port where zookeeper is running [default:localhost:8983]
@@ -27,6 +29,7 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
 - sc-create-collection.sh
 
  Script for creating a given collection.
+ https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api1
 
     - -c collection: name of collection [default:none] 
     - -g config: name of the zookeeper configuraiton as found in zookeeper:/configs [default:none] 
@@ -36,6 +39,7 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
 - sc-delete-collection.sh
 
  Script for deleting a given collection.
+ https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api6
 
     - -c collection: name of collection [default:none]
     - -d: give to delete the index files [default:false]
@@ -61,6 +65,18 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
     - -n new value: value to change to [default:none]
     - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-update-data....out]
     - -u unique id value: value of the unique id of the document to change [default:none]
+
+- sc-delete-replica.sh
+
+ Script for deleting a replica from a given shard from a give collection.
+ https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api9|delete replica
+
+    - -c collection: name of collection [default:none]
+    - -h host:port: host and port where zookeeper is running [default:localhost:8983]
+    - -o file: path to file to which output will be written [default:mktemp -q /tmp/sc-delete-data....]
+    - -r replica: name of replica to delete
+    - -s shard: name of shard to which the replica belongs
+
 
 - zk-upload-config.sh
 

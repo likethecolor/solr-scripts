@@ -24,7 +24,7 @@
 #                 [default:none]
 #
 #   -h host:port: host and port where zookeeper is running
-#                 [default:localhost:2181]
+#                 [default:$ZK_HOST_PORT]
 #
 #   -l path: path to solr's lib where the following jars are located
 #              - commons-cli-*.jar
@@ -35,7 +35,7 @@
 #              - solr-core-*.jar
 #              - solr-solrj-*.jar
 #              - zookeeper-*.jar
-#                 [default:none]
+#                 [default:$SOLR_ZK_LIB_DIR]
 #
 #   -n name: name of this configuration as it will appear in zookeeper:/configs
 #                 [default:none]
@@ -56,6 +56,17 @@ if test $? -ne 0; then
   exit 1
 fi
 
+function usage() {
+  echo "usage: $0 -d conf-dir -h host:port -l solr-lib -n conf-name"
+  echo '  Uploads to zookeeper running on host:port the configuration directory located'
+  echo '  at conf-dir giving the configuration the name conf-name.  The jars found in -l'
+  echo '  are used to do the uploading.'
+  if test "$@" != ''; then
+    echo -e "---> ${color_prefix}$@$color_prefix"
+  fi
+}
+
+
 # jars used to perform the upload
 #
 jars="commons-cli- \ 
@@ -71,18 +82,8 @@ zookeeper-"
 #
 conf_dir=''
 conf_name=''
-host_port='localhost:2181'
-solr_lib=''
-
-function usage() {
-  echo "usage: $0 -d conf-dir -h host:port -l solr-lib -n conf-name"
-  echo '  Uploads to zookeeper running on host:port the configuration directory located'
-  echo '  at conf-dir giving the configuration the name conf-name.  The jars found in -l'
-  echo '  are used to do the uploading.'
-  if test "$@" != ''; then
-    echo -e "---> ${color_prefix}$@$color_prefix"
-  fi
-}
+host_port=$ZK_HOST_PORT
+solr_lib=$SOLR_ZK_LIB_DIR
 
 while test -n "$1"; do
   case "$1" in
@@ -131,14 +132,22 @@ if test -z "$conf_name"; then
   exit 1
 fi
 if test -z "$host_port"; then
-  usage 'no host:port (-h)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
+  if test -z "$ZK_HOST_PORT"; then
+    usage 'no host:port (-h) and no $ZK_HOST_PORT'
+    echo -e "${color_prefix}exiting$color_suffix"
+  else
+    host_port=$ZK_HOST_PORT
+    log_stdout "using \$ZK_HOST_PORT env variable: $host_port"
+  fi
 fi
 if test -z "$solr_lib"; then
-  usage 'no solr_lib (-l)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
+  if test -z "$SOLR_ZK_LIB_DIR"; then
+    usage 'no solr_lib (-l) and no $SOLR_ZK_LIB_DIR'
+    echo -e "${color_prefix}exiting$color_suffix"
+  else
+    solr_lib=$SOLR_ZK_LIB_DIR
+    log_stdout "using \$SOLR_ZK_LIB_DIR env variable: $solr_lib"
+  fi
 fi
 
 exec > >(tee $log_file) 2>&1

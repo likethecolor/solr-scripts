@@ -27,7 +27,7 @@
 #                 [default:false]
 #
 #   -h host:port: host and port where zookeeper is running
-#                 [default:none]
+#                 [default:$SOLR_HOST_PORT]
 #
 #   -o file: path to file to which output will be written
 #                 [default:mktemp -q /tmp/sc-delete-collection...out]
@@ -55,6 +55,8 @@ function usage() {
   echo "usage: $0 -h host:port -c core-name [-d]"
   echo '  sends the DELETE action to the host deleting an existing core having'
   echo '  core-name.  If -d is provided the index files will also be deleted.'
+  echo
+  echo '  note: the env variable $SOLR_HOST_PORT will be used as default value for -h'
   if test "$@" != ''; then
     echo -e "---> ${color_prefix}$@$color_suffix"
   fi
@@ -62,7 +64,7 @@ function usage() {
 
 core=''
 delete_index='false'
-host_port=''
+host_port=$SOLR_HOST_PORT
 output_file=''
 
 while test -n "$1"; do
@@ -98,12 +100,16 @@ while test -n "$1"; do
   esac
 done
 
-if test "x$host_port" = 'x'; then
-  usage 'no host:port (-h)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
+if test -z "$host_port"; then
+  if test -z "$SOLR_HOST_PORT"; then
+    usage 'no host:port (-h) and no $SOLR_HOST_PORT'
+    echo -e "${color_prefix}exiting$color_suffix"
+  else
+    host_port=$SOLR_HOST_PORT
+    log_stdout "using \$SOLR_HOST_PORT env variable: $host_port"
+  fi
 fi
-if test "x$core" = 'x'; then
+if test -z "$core"; then
   usage 'no core-name (-c)'
   echo -e "${color_prefix}exiting$color_suffix"
   exit 1

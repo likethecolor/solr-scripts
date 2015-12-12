@@ -16,21 +16,24 @@
 #
 # Original author: Dan Brown <dan@likethecolor.org>
 #
-# Script for creating an alias.
+# Script for deleting a given replica
 #
 # Arguments - all are required:
 #
-#   -a alias-name: name of alias
-#                 [default:none]
-#
-#   -c collection: name of collection
+#   -c collection: name of collection containing replica
 #                 [default:none]
 #
 #   -h host:port: host and port where zookeeper is running
 #                 [default:$SOLR_HOST_PORT]
 #
 #   -o file: path to file to which output will be written
-#                 [default:mktemp -q /tmp/sc-create-alias...out]
+#                 [default:mktemp -q /tmp/sc-delete-collection...out]
+#
+#   -r replica: name of replica
+#                 [default:none]
+#
+#   -s shard: shard number
+#                 [default:none]
 #
 
 dir=$(cd $(dirname $0); pwd)
@@ -52,29 +55,24 @@ log_file=$log_file.log
 touch $log_file
 
 function usage() {
-  echo "usage: $0 -a alias-name -c collection -h host:port"
-  echo '  Sends the CREATEALIAS action to the host creating an alias for collection'
-  echo '  with the alias name alias-name.'
+  echo "usage: $0 -c collection -h host:port -o output-file -r replica -s shard"
+  echo '  sends the DELETEREPLICA action to the host deleting an existing'
+  echo '  replica within the given collection having the name replica.'
   echo
   echo '  note: the env variable $SOLR_HOST_PORT will be used as default value for -h'
   if test "$@" != ''; then
-    echo -e "---> ${color_prefix}$@${color_suffix}"
+    echo -e "---> ${color_prefix}$@$color_suffix"
   fi
 }
 
-alias=''
 collection=''
 host_port=$SOLR_HOST_PORT
 output_file=''
+replica=''
+shard=''
 
 while test -n "$1"; do
   case "$1" in
-    '-a')
-      shift
-      alias=$1
-      shift
-      ;;
-
     '-c')
       shift
       collection=$1
@@ -93,6 +91,18 @@ while test -n "$1"; do
       shift
       ;;
 
+    '-r')
+      shift
+      replica=$1
+      shift
+      ;;
+
+    '-s')
+      shift
+      shard=$1
+      shift
+      ;;
+
     *)
       usage "cannot understand argument $1"
       echo -e "${color_prefix}exiting$color_suffix"
@@ -101,16 +111,6 @@ while test -n "$1"; do
   esac
 done
 
-if test -z "$alias"; then
-  usage 'no alias (-a)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
-fi
-if test -z "$collection"; then
-  usage 'no collection (-c)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
-fi
 if test -z "$host_port"; then
   if test -z "$SOLR_HOST_PORT"; then
     usage 'no host:port (-h) and no $SOLR_HOST_PORT'
@@ -120,28 +120,43 @@ if test -z "$host_port"; then
     log_stdout "using \$SOLR_HOST_PORT env variable: $host_port"
   fi
 fi
+if test -z "$collection"; then
+  usage 'no collection (-c)'
+  echo -e "${color_prefix}exiting$color_suffix"
+  exit 1
+fi
 if test -z "$output_file"; then
   log_info 'no output file (-o)'
   log_info 'using output file based on log file name'
   output_file='/tmp/'$(basename $log_file '.log').out
 fi
+if test -z "$replica"; then
+  usage 'no replica (-r)'
+  echo -e "${color_prefix}exiting$color_suffix"
+  exit 1
+fi
+if test -z "$shard"; then
+  usage 'no shard (-s)'
+  echo -e "${color_prefix}exiting$color_suffix"
+  exit 1
+fi
 
 exec > >(tee $log_file) 2>&1
-log_stdout 'starting to create alias using:'
-log_stdout "    host:port: $host_port"
-log_stdout "   collection: $collection"
-log_stdout "   alias name: $alias"
-log_stdout "     log file: $log_file"
-log_stdout "  output file: $output_file"
-
-url="${host_port}/solr/admin/collections?action=CREATEALIAS&name=${alias}&collections=${collection}"
+log_stdout 'starting to delete existing core using:'
+log_stdout "     host:port: $host_port"
+log_stdout "     core name: $core"
+log_stdout "      log file: $log_file"
+log_stdout "   output file: $output_file"
+log_stdout "       replica: $replica"
+log_stdout "         shard: $shard"
+url="${host_port}/solr/admin/collections?action=DELETEREPLICA&collection=${collection}&shard=${shard}&replica=${replica}"
 
 exit_code=1
 client=$(which curl)
 if test -n "$client"; then
   log_info "found curl: $client"
-  log_stdout "curl '$url' -s --output '$output_file'"
-  curl "$url" -s --output "$output_file" 2>&1
+  log_stdout "curl '$url'"
+  curl "$url" -s --output $output_file
   exit_code=$?
   log_info "curl call returned: $exit_code"
   if test $exit_code -eq 0; then

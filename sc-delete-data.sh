@@ -24,7 +24,7 @@
 #                 [default:none]
 #
 #   -h host:port: host and port where zookeeper is running
-#                 [default:localhost:8983]
+#                 [default:$SOLR_HOST_PORT]
 #
 #   -o file: path to file to which output will be written
 #                 [default:mktemp -q /tmp/sc-delete-data....]
@@ -48,19 +48,22 @@ rm $log_file
 log_file=$log_file.log
 touch $log_file
 
-host_port='localhost:8983'
-collection=''
-dry_run=0
-
 function usage() {
   echo "usage: $0 -h host:port -c collection-name -o output-file [--dry-run]"
   echo '  Sends the DELETE action to the host deleting all data in the specified'
   echo '  collection-name.  If --dry-run is provided only the url will be printed,'
   echo '  nothing will be deleted.'
+  echo
+  echo '  note: the env variable $SOLR_HOST_PORT will be used as default value for -h'
   if test "$@" != ''; then
     echo -e "---> $color_prefix$@$color_suffix"
   fi
 }
+
+
+collection=''
+dry_run=0
+host_port=$SOLR_HOST_PORT
 
 while test -n "$1"; do
   case "$1" in
@@ -95,15 +98,19 @@ while test -n "$1"; do
   esac
 done
 
-if test -z "$host_port"; then
-  usage 'no host:port (-h)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
-fi
 if test -z "$collection"; then
   usage 'no collection name (-c)'
   echo -e "${color_prefix}exiting$color_suffix"
   exit 1
+fi
+if test -z "$host_port"; then
+  if test -z "$SOLR_HOST_PORT"; then
+    usage 'no host:port (-h) and no $SOLR_HOST_PORT'
+    echo -e "${color_prefix}exiting$color_suffix"
+  else
+    host_port=$SOLR_HOST_PORT
+    log_stdout "using \$SOLR_HOST_PORT env variable: $host_port"
+  fi
 fi
 if test -z "$output_file"; then
   log_info 'no output file (-o)'

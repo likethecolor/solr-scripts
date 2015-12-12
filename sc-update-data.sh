@@ -24,7 +24,7 @@
 #                 [default:none]
 #
 #   -h host:port: host and port where zookeeper is running
-#                 [default:localhost:8983]
+#                 [default:$SOLR_HOST_PORT]
 #
 #   -f field-name: name of the field whose value is to be modified
 #                 [default:none]
@@ -65,13 +65,15 @@ function usage() {
   echo "  Change the value of a solr document.  Given the unique id (-u) and that id's"
   echo '  field name (-i) change the value of the field (-f) to the new value (-n).  The'
   echo '  output of the call will be stored in the output file (-o).'
+  echo
+  echo '  note: the env variable $SOLR_HOST_PORT will be used as default value for -h'
   if test "$@" != ''; then
     echo -e "---> ${color_prefix}$@${color_suffix}"
   fi
 }
 
 collection=my-collection
-host_port=localhost:8983
+host_port=$SOLR_HOST_PORT
 field_name=''
 new_value=''
 unique_id_field_name=''
@@ -136,15 +138,19 @@ if test -z "$collection"; then
   echo -e "${color_prefix}exiting$color_suffix"
   exit 1
 fi
-if test -z "$host_port"; then
-  usage 'no host:port (-h)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
-fi
 if test -z "$field_name"; then
   usage 'no field name (-f)'
   echo -e "${color_prefix}exiting$color_suffix"
   exit 1
+fi
+if test -z "$host_port"; then
+  if test -z "$SOLR_HOST_PORT"; then
+    usage 'no host:port (-h) and no $SOLR_HOST_PORT'
+    echo -e "${color_prefix}exiting$color_suffix"
+  else
+    host_port=$SOLR_HOST_PORT
+    log_stdout "using \$SOLR_HOST_PORT env variable: $host_port"
+  fi
 fi
 if test -z "$output_file"; then
   log_info 'no output file (-o)'

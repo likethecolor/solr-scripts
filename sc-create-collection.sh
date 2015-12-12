@@ -27,7 +27,7 @@
 #                 [default:none]
 #
 #   -h host:port: host and port where zookeeper is running
-#                 [default:localhost:8983]
+#                 [default:$SOLR_HOST_PORT]
 #
 #   -o file: path to file to which output will be written
 #                 [default:mktemp -q /tmp/sc-create-collection...out]
@@ -56,6 +56,8 @@ function usage() {
   echo '  Sends the CREATE action to the host creating a new collection having'
   echo '  collection-name and using the configuration called zk-config-name found in'
   echo '  zookeeper'
+  echo
+  echo '  note: the env variable $SOLR_HOST_PORT will be used as default value for -h'
   if test "$@" != ''; then
     echo -e "---> ${color_prefix}$@$color_suffix"
   fi
@@ -63,7 +65,7 @@ function usage() {
 
 collection=''
 config=''
-host_port='localhost:8983'
+host_port=$SOLR_HOST_PORT
 output_file=''
 
 while test -n "$1"; do
@@ -111,9 +113,13 @@ if test -z "$config"; then
   exit 1
 fi
 if test -z "$host_port"; then
-  usage 'no host:port (-h)'
-  echo -e "${color_prefix}exiting$color_suffix"
-  exit 1
+  if test -z "$SOLR_HOST_PORT"; then
+    usage 'no host:port (-h) and no $SOLR_HOST_PORT'
+    echo -e "${color_prefix}exiting$color_suffix"
+  else
+    host_port=$SOLR_HOST_PORT
+    log_stdout "using \$SOLR_HOST_PORT env variable: $host_port"
+  fi
 fi
 if test -z "$output_file"; then
   log_info 'no output file (-o)'
