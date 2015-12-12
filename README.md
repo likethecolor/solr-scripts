@@ -69,7 +69,7 @@ I do quite a bit of work with SOLR (Cloud).  There are a few actions that happen
 - sc-delete-replica.sh
 
  Script for deleting a replica from a given shard from a give collection.
- https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api9|delete replica
+ https://cwiki.apache.org/confluence/display/solr/Collections+API#CollectionsAPI-api9
 
     - -c collection: name of collection [default:none]
     - -h host:port: host and port where zookeeper is running [default:localhost:8983]
